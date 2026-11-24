@@ -1,0 +1,55 @@
+/** Every user-visible text lives here (docs/conventions.md, Language). */
+export const tr = {
+  app: {
+    name: 'BT Talep Yönetimi',
+  },
+  nav: {
+    label: 'Ana menü',
+    overview: 'Genel Bakış',
+    myRequests: 'Taleplerim',
+    newRequest: 'Yeni Talep Oluştur',
+    pendingApprovals: 'Onay Bekleyenler',
+    unitRequests: 'Birim Talepleri',
+    assignedToMe: 'Bana Atanan İşler',
+    allRequests: 'Tüm Talepler',
+    reports: 'Raporlar',
+    userManagement: 'Kullanıcı Yönetimi',
+    categoryManagement: 'Kategori Yönetimi',
+    workflowManagement: 'Onay Akışı Yönetimi',
+    settings: 'Ayarlar',
+  },
+  shell: {
+    collapseSidebar: 'Menüyü daralt',
+    expandSidebar: 'Menüyü genişlet',
+    openMenu: 'Menüyü aç',
+  },
+  theme: {
+    label: 'Tema',
+    light: 'Açık',
+    dark: 'Koyu',
+    system: 'Sistem',
+  },
+  comingSoon: {
+    title: 'Bu ekran hazırlanıyor',
+    description: 'Bu bölüm sonraki sürümlerde kullanıma açılacak.',
+  },
+  notFound: {
+    title: 'Sayfa bulunamadı',
+    description: 'Aradığınız sayfa mevcut değil ya da taşınmış olabilir.',
+    backHome: 'Genel Bakış’a dön',
+  },
+  systemStatus: {
+    title: 'Sistem Durumu',
+    loading: 'Sistem durumu yükleniyor',
+    api: 'API',
+    database: 'Veritabanı',
+    departmentCount: 'Departman sayısı',
+    apiUp: 'Çalışıyor',
+    databaseAvailable: 'Erişilebilir',
+    databaseUnavailable: 'Erişilemiyor',
+    noDepartments: 'Tanımlı departman yok',
+    notAvailable: '—',
+    error: 'Sistem durumu alınamadı. Sunucuya şu anda ulaşılamıyor.',
+    retry: 'Tekrar dene',
+  },
+} as const;

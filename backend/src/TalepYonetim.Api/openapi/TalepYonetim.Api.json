@@ -1,0 +1,72 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "TalepYonetim.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/system/status": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "operationId": "GetSystemStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiStatus": {
+        "enum": [
+          "up"
+        ]
+      },
+      "DatabaseStatus": {
+        "enum": [
+          "available",
+          "unavailable"
+        ]
+      },
+      "SystemStatus": {
+        "required": [
+          "api",
+          "database",
+          "departmentCount"
+        ],
+        "type": "object",
+        "properties": {
+          "api": {
+            "$ref": "#/components/schemas/ApiStatus"
+          },
+          "database": {
+            "$ref": "#/components/schemas/DatabaseStatus"
+          },
+          "departmentCount": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "System"
+    }
+  ]
+}

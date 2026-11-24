@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TalepYonetim.Api/TalepYonetim.Api.csproj" />
+    <Project Path="src/TalepYonetim.SharedKernel/TalepYonetim.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/TalepYonetim.Identity/TalepYonetim.Identity.csproj" />
+    <Project Path="src/Modules/TalepYonetim.Reporting/TalepYonetim.Reporting.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TalepYonetim.ArchitectureTests/TalepYonetim.ArchitectureTests.csproj" />
+    <Project Path="tests/TalepYonetim.IntegrationTests/TalepYonetim.IntegrationTests.csproj" />
+    <Project Path="tests/TalepYonetim.UnitTests/TalepYonetim.UnitTests.csproj" />
+  </Folder>
+</Solution>

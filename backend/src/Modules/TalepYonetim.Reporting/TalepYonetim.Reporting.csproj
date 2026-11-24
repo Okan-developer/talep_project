@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TalepYonetim.SharedKernel\TalepYonetim.SharedKernel.csproj" />
+    <ProjectReference Include="..\TalepYonetim.Identity\TalepYonetim.Identity.csproj" />
+  </ItemGroup>
+</Project>

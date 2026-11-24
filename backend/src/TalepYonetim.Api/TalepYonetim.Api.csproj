@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <!-- Build-time OpenAPI document: the frontend's types are generated from it (docs/architecture.md). -->
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)/openapi</OpenApiDocumentsDirectory>
+    <OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TalepYonetim.SharedKernel\TalepYonetim.SharedKernel.csproj" />
+    <ProjectReference Include="..\Modules\TalepYonetim.Identity\TalepYonetim.Identity.csproj" />
+    <ProjectReference Include="..\Modules\TalepYonetim.Reporting\TalepYonetim.Reporting.csproj" />
+  </ItemGroup>
+</Project>

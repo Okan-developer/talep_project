@@ -1,0 +1,3 @@
+# Test names describe behavior with underscores (docs/conventions.md, Naming)
+[*.cs]
+dotnet_diagnostic.CA1707.severity = none
