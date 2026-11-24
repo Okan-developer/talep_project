@@ -1,0 +1,21 @@
+# Yerel geliştirme veritabanı (README, "Yerelde çalıştırma").
+# Kimlik bilgileri yalnızca bu yerel kapsayıcıya aittir; gerçek ortamlarda kullanılmaz.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: talep_yonetim
+      POSTGRES_USER: talep
+      POSTGRES_PASSWORD: talep_dev_local
+    ports:
+      - "5433:5432"
+    volumes:
+      - talep_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U talep -d talep_yonetim"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  talep_pgdata:
