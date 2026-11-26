@@ -7,18 +7,21 @@ import { ThemeProvider } from '@/app/ThemeProvider';
 import type { CurrentUser } from '@/shared/api/client';
 import { AuthProvider } from '@/shared/auth/AuthProvider';
 import { setSession } from '@/shared/auth/session';
-import { adminUser, sessionFor } from './server';
+import { sessionFor, userWith } from './server';
+
+/** Sees all 12 menu items: no single role does (spec 0002, R-11), so two roles. */
+export const allMenuUser = userWith(['Admin', 'SoftwareStaff'], 'Ayşe Yılmaz');
 
 /**
  * Renders the whole application at a path, as main.tsx does, with an in-memory router.
- * By default a Sistem Yöneticisi is already signed in (all 12 menu items); pass `user: null` to
+ * By default a user who sees all 12 menu items is already signed in; pass `user: null` to
  * start signed out — the app then restores the session from the (stubbed) refresh endpoint.
  */
 export function renderApp(
   path = '/',
   options: { userEvent?: Parameters<typeof userEvent.setup>[0]; user?: CurrentUser | null } = {},
 ) {
-  const signedIn = options.user === undefined ? adminUser : options.user;
+  const signedIn = options.user === undefined ? allMenuUser : options.user;
   if (signedIn) setSession(sessionFor(signedIn));
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, refetchOnWindowFocus: false } },

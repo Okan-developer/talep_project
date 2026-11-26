@@ -2,6 +2,7 @@ import { screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { setMedia } from '@/test/media';
 import { renderApp } from '@/test/renderApp';
+import { userWith } from '@/test/server';
 
 const expectedMenu = [
   'Genel Bakış',
@@ -75,5 +76,55 @@ describe('AppSidebar (spec 0001 AC-1, AC-9)', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+});
+
+describe('role-based menu (spec 0002, R-11 / AC-14)', () => {
+  const everyone = ['Genel Bakış', 'Taleplerim', 'Yeni Talep Oluştur'];
+  const unitManager = [
+    'Onay Bekleyenler',
+    'Birim Talepleri',
+    'Bana Atanan İşler',
+    'Tüm Talepler',
+    'Raporlar',
+  ];
+  const table: [name: string, roles: string[], extra: string[]][] = [
+    ['Talep Sahibi', ['Requester'], []],
+    ['Birim Yöneticisi', ['DepartmentManager'], ['Onay Bekleyenler']],
+    ['BT Yazılım Personeli', ['SoftwareStaff'], ['Bana Atanan İşler']],
+    ['BT Sistem Personeli', ['SystemStaff'], ['Bana Atanan İşler']],
+    ['BT Yazılım Birim Yöneticisi', ['ItUnitManager'], unitManager],
+    ['BT Sistem Birim Yöneticisi', ['ItUnitManager'], unitManager],
+    [
+      'Sistem Yöneticisi',
+      ['Admin'],
+      [
+        'Onay Bekleyenler',
+        'Birim Talepleri',
+        'Tüm Talepler',
+        'Raporlar',
+        'Kullanıcı Yönetimi',
+        'Kategori Yönetimi',
+        'Onay Akışı Yönetimi',
+        'Ayarlar',
+      ],
+    ],
+  ];
+
+  it.each(table)('%s sees exactly the R-11 items, in the spec 0001 order', (name, roles, extra) => {
+    renderApp('/', { user: userWith(roles, name) });
+
+    const expected = expectedMenu.filter((item) => everyone.includes(item) || extra.includes(item));
+    expect(menuLinks().map((link) => link.textContent)).toEqual(expected);
+  });
+
+  it('a user with two roles sees the union of both', () => {
+    renderApp('/', { user: userWith(['DepartmentManager', 'SoftwareStaff'], 'İki Rollü') });
+
+    expect(menuLinks().map((link) => link.textContent)).toEqual([
+      ...everyone,
+      'Onay Bekleyenler',
+      'Bana Atanan İşler',
+    ]);
   });
 });

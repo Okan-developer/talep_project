@@ -5,7 +5,7 @@ import { renderApp } from '@/test/renderApp';
 import { server, statusUrl } from '@/test/server';
 
 describe('keyboard access (spec 0001 AC-10)', () => {
-  it('Tab walks sidebar → top bar → content, reaching every menu item, the theme control and "Tekrar dene"', async () => {
+  it('Tab walks sidebar → top bar → content, reaching every menu item, the theme control, "Çıkış" and "Tekrar dene"', async () => {
     server.use(http.get(statusUrl, () => HttpResponse.error()));
     const { user } = renderApp('/');
     await screen.findByRole('alert');
@@ -15,6 +15,7 @@ describe('keyboard access (spec 0001 AC-10)', () => {
       ...menu,
       screen.getByRole('button', { name: 'Menüyü daralt' }),
       screen.getByRole('radio', { name: 'Sistem' }),
+      screen.getByRole('button', { name: 'Çıkış' }), // spec 0002, R-7: the top bar gained "Çıkış"
       screen.getByRole('button', { name: 'Tekrar dene' }),
     ];
 

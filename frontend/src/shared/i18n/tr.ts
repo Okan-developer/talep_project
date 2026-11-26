@@ -52,6 +52,7 @@ export const tr = {
   forbidden: {
     title: 'Bu sayfayı görüntüleme yetkiniz yok',
     description: 'Bu sayfa rolünüz için kullanıma açık değil.',
+    hint: 'Erişim gerekiyorsa sistem yöneticinize başvurun.',
     backHome: 'Genel Bakış’a dön',
   },
   theme: {

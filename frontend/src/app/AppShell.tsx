@@ -6,7 +6,7 @@ import { cn, safeStorage } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/shared/ui/sheet';
 import { AppSidebar } from './AppSidebar';
-import { ThemeToggle } from './ThemeToggle';
+import { TopBar } from './TopBar';
 import { MOBILE_QUERY, useMediaQuery } from './useMediaQuery';
 
 export const SIDEBAR_STORAGE_KEY = 'talep.sidebar.collapsed';
@@ -80,9 +80,7 @@ export function AppShell() {
             </Button>
           )}
           {isMobile && <span className="font-semibold">{tr.app.name}</span>}
-          <div className="ml-auto flex items-center gap-2">
-            <ThemeToggle />
-          </div>
+          <TopBar />
         </header>
 
         <main id="main" className="flex-1 p-4 md:p-6">
