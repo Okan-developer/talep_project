@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, beforeEach } from 'vitest';
+import { resetSessionForTests } from '@/shared/auth/session';
 import { installMatchMedia, resetMedia } from './media';
 import { server } from './server';
 
@@ -14,6 +15,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   server.resetHandlers();
+  resetSessionForTests();
   window.localStorage.clear();
   document.documentElement.className = '';
   document.documentElement.removeAttribute('style');

@@ -42,10 +42,9 @@ public static class AuthEndpoints
 
         // Outside Development the endpoint exists only to answer "not found" (spec 0002, R-5 / AC-1):
         // without it the fallback policy would answer 401 instead.
-        auth.MapGet("/demo-users", isDevelopment ? DemoUsersList : DemoUsersHidden)
+        auth.MapGet("/demo-users", () => DemoUsersList(isDevelopment))
             .WithName("GetDemoUsers")
-            .AllowAnonymous()
-            .ExcludeFromDescription();
+            .AllowAnonymous();
 
         return app;
     }
@@ -104,10 +103,10 @@ public static class AuthEndpoints
         return TypedResults.NoContent();
     }
 
-    private static Ok<DemoUserView[]> DemoUsersList() => TypedResults.Ok(
-        DemoUsers.All.Select(u => new DemoUserView(u.FullName, u.Email, u.Role, DemoUsers.Password)).ToArray());
-
-    private static NotFound DemoUsersHidden() => TypedResults.NotFound();
+    private static Results<Ok<DemoUserView[]>, NotFound> DemoUsersList(bool isDevelopment) =>
+        isDevelopment
+            ? TypedResults.Ok(DemoUsers.All.Select(u => new DemoUserView(u.FullName, u.Email, u.Role, DemoUsers.Password)).ToArray())
+            : TypedResults.NotFound();
 
     private static ProblemHttpResult Problem(int status, string title, Error error) =>
         TypedResults.Problem(

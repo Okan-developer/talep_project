@@ -98,6 +98,32 @@
         }
       }
     },
+    "/api/auth/demo-users": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "GetDemoUsers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DemoUserView"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/api/system/status": {
       "get": {
         "tags": [
@@ -185,6 +211,29 @@
           "available",
           "unavailable"
         ]
+      },
+      "DemoUserView": {
+        "required": [
+          "fullName",
+          "email",
+          "role",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
       },
       "HttpValidationProblemDetails": {
         "type": "object",
