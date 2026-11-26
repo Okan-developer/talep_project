@@ -1,13 +1,14 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TalepYonetim.Api.Errors;
 using TalepYonetim.Identity;
 using TalepYonetim.Reporting;
 using TalepYonetim.Reporting.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddProblemDetails();
+builder.Services.AddTurkishProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {

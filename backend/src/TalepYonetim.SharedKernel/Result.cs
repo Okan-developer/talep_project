@@ -39,3 +39,10 @@ public static class Result
 
     public static Result<T> Failure<T>(Error error) => Result<T>.CreateFailure(error);
 }
+
+/// <summary>ProblemDetails extension names shared by every module's endpoints.</summary>
+public static class ProblemExtensions
+{
+    /// <summary>The stable code of a business <see cref="Error"/>; its presence keeps the error's own Turkish text.</summary>
+    public const string Code = "code";
+}
