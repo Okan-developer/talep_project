@@ -38,6 +38,10 @@ if (!isOpenApiGeneration)
     try
     {
         await app.Services.MigrateIdentityModuleAsync(CancellationToken.None);
+        if (app.Environment.IsDevelopment())
+        {
+            await app.Services.SeedIdentityDemoUsersAsync(CancellationToken.None); // spec 0002, R-2
+        }
     }
 #pragma warning disable CA1031 // the API must start without a database (spec 0001, AC-5)
     catch (Exception exception)
