@@ -36,5 +36,6 @@ public sealed class ApiFactory(string connectionString) : WebApplicationFactory<
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:Default", connectionString);
+        builder.UseSetting("Jwt:SigningKey", "integration-test-signing-key-0123456789abcdef");
     }
 }

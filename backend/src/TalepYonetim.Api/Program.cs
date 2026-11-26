@@ -8,6 +8,14 @@ using TalepYonetim.Reporting.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// The build-time OpenAPI generator starts this host too; it must not touch the database, and it
+// never issues a token, so it gets a throwaway signing key instead of failing the key check.
+var isOpenApiGeneration = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
+if (isOpenApiGeneration)
+{
+    builder.Configuration["Jwt:SigningKey"] = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+}
+
 builder.Services.AddTurkishProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -23,16 +31,16 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+app.MapIdentityEndpoints(app.Environment.IsDevelopment());
 app.MapSystemStatusEndpoints();
 
-// The build-time OpenAPI generator starts this host too; it must not touch the database.
-var isOpenApiGeneration = Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
 if (!isOpenApiGeneration)
 {
     try
