@@ -11,6 +11,7 @@ const pairs: [text: string, background: string][] = [
   ['muted-foreground', 'background'],
   ['muted-foreground', 'card'],
   ['muted-foreground', 'muted'],
+  ['card-foreground', 'muted'], // demo user list hover on the login card (spec 0002)
   ['muted-foreground', 'sidebar'],
   ['primary-foreground', 'primary'],
   ['primary', 'background'],
