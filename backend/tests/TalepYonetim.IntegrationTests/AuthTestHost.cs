@@ -29,6 +29,7 @@ public sealed class AuthTestHost(string connectionString, string environment = "
     public const string ThrowPath = "/test/throw";
     public const string BodyPath = "/test/body";
     public const string AdminUsersPath = "/test/admin-users";
+    public const string UnmarkedPath = "/test/unmarked";
     public const string LeakedSecret = "gizli-ic-detay-42";
     public const string Password = "Test.Parola1!";
 
@@ -49,6 +50,15 @@ public sealed class AuthTestHost(string connectionString, string environment = "
     /// <summary>A client on https (the refresh cookie is Secure) that leaves cookies to the test.</summary>
     public HttpClient CreateHttpsClient() =>
         CreateClient(new WebApplicationFactoryClientOptions { BaseAddress = new Uri("https://localhost"), HandleCookies = false });
+
+    /// <summary>A signed access token for a user with <paramref name="roles"/>, made without the database.</summary>
+    public string CreateAccessToken(params string[] roles)
+    {
+        using var scope = Services.CreateScope();
+        var tokens = scope.ServiceProvider.GetRequiredService<TokenService>();
+        var user = new AppUser { Id = Guid.CreateVersion7(), FullName = "Token Kullanıcısı", Email = "token@test.local" };
+        return tokens.CreateAccessToken(user, roles).Token;
+    }
 
     /// <summary>Creates a user with <see cref="Password"/> and the given roles in the Muhasebe department.</summary>
     public async Task SeedUserAsync(string email, params string[] roles)
@@ -86,6 +96,7 @@ public sealed class AuthTestHost(string connectionString, string environment = "
             endpoints.MapGet(ThrowPath, string () => throw new InvalidOperationException(LeakedSecret)).AllowAnonymous();
             endpoints.MapPost(BodyPath, (BodyInput input) => input.Name).AllowAnonymous();
             endpoints.MapGet(AdminUsersPath, () => Results.Ok("ok")).RequirePermission(Permissions.AdminUsers);
+            endpoints.MapGet(UnmarkedPath, () => Results.Ok("ok")); // no auth metadata at all: the fallback decides
         }
     }
 }

@@ -42,7 +42,9 @@ public static class IdentityModule
             .AddSignInManager();
 
         services.AddJwtAuthentication(configuration);
-        services.AddAuthorization();
+        // docs/security.md, AuthZ: default deny — every endpoint needs a signed-in user unless marked anonymous.
+        services.AddAuthorization(options => options.FallbackPolicy =
+            new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
         services.AddSingleton<Microsoft.AspNetCore.Authorization.IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddLoginRateLimit();
 

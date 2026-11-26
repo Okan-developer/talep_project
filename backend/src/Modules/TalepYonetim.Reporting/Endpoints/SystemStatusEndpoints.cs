@@ -9,12 +9,11 @@ public static class SystemStatusEndpoints
 {
     public static IEndpointRouteBuilder MapSystemStatusEndpoints(this IEndpointRouteBuilder app)
     {
-        // Anonymous by decision of spec 0001 (Constraints); spec 0002 revisits it with default-deny.
+        // Any signed-in user, no particular permission (spec 0002, R-9): the fallback policy applies.
         app.MapGet("/api/system/status", async (SystemStatusQuery query, CancellationToken cancellationToken) =>
                 TypedResults.Ok(await query.ExecuteAsync(cancellationToken)))
             .WithName("GetSystemStatus")
-            .WithTags("System")
-            .AllowAnonymous();
+            .WithTags("System");
         return app;
     }
 }

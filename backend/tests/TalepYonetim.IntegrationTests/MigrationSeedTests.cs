@@ -23,9 +23,9 @@ public sealed class MigrationSeedTests(PostgresFixture postgres) : IClassFixture
 
     private static async Task StartApiAsync(string connectionString)
     {
-        await using var factory = new ApiFactory(connectionString);
-        using var client = factory.CreateClient(); // host start applies pending migrations and the seed
-        using var response = await client.GetAsync("/api/system/status", TestContext.Current.CancellationToken);
+        await using var host = new AuthTestHost(connectionString);
+        using var client = host.CreateHttpsClient(); // host start applies pending migrations and the seed
+        using var response = await AuthClient.GetWithTokenAsync(client, "/api/system/status", host.CreateAccessToken("Requester"));
         response.EnsureSuccessStatusCode();
     }
 

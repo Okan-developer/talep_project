@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Npgsql;
 using Testcontainers.PostgreSql;
 
@@ -26,16 +24,5 @@ public sealed class PostgresFixture : IAsyncLifetime
         await using var command = new NpgsqlCommand($"CREATE DATABASE \"{name}\"", connection);
         await command.ExecuteNonQueryAsync();
         return new NpgsqlConnectionStringBuilder(_container.GetConnectionString()) { Database = name }.ConnectionString;
-    }
-}
-
-/// <summary>The API host pointed at the given connection string.</summary>
-public sealed class ApiFactory(string connectionString) : WebApplicationFactory<Program>
-{
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Testing");
-        builder.UseSetting("ConnectionStrings:Default", connectionString);
-        builder.UseSetting("Jwt:SigningKey", "integration-test-signing-key-0123456789abcdef");
     }
 }

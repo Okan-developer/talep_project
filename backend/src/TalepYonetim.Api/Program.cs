@@ -32,6 +32,9 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseRateLimiter();
+// Explicit, after the status-code pages, so a bodyless 401/403 becomes a Turkish ProblemDetails (spec 0002, R-12).
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
