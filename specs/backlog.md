@@ -14,22 +14,10 @@ step 7). Nothing lands here without that decision; noise is rejected in the tria
   A decision deferred at bootstrap (its REPORT) uses Source: bootstrap <YYYY-MM-DD>.
 -->
 
-- **B-1** — Git deposu, uzak sunucu (remote) ve CI henüz yok; bootstrap çıktısı commit'lenmedi
-  (`chore/bootstrap` bekliyor). Full green'in nereden geleceği (CI ya da yerel full koşu,
-  `docs/testing.md` rule 6) ve `chore/bootstrap`'ın nasıl merge edileceği depo verildiğinde
-  kararlaştırılır — Source: bootstrap 2026-11-20 — Severity: Medium — Recommendation: depo
-  verildiğinde ilk iş olarak bootstrap çıktısını `chore/bootstrap` branch'ine commit'leyip PR ile
-  `main`'e almak; CI'da `.github/workflows/check.yml` ile full profil + `./scripts/doctor --strict`
-  — Deferred by: proje sahibi, 2026-11-20, depo daha sonra verilecek
 - **B-2** — Kişisel veri (KVKK) hassas alanı: gerçek kullanıcı verisine geçilmeden önce
   `docs/domain.md` Sensitive areas'a eklenmeli — Source: bootstrap 2026-11-20 — Severity: Medium
   — Recommendation: gerçek veriye geçiş spec'inden önce eklemek — Deferred by: proje sahibi,
   2026-11-20, ilk aşama demo veriyle çalışıyor
-- **B-3** — ProblemDetails `title`/`detail` İngilizce üretiliyor; `docs/conventions.md` (Error
-  handling) Türkçe istiyor — Source: spec 0001, review round 1 (backend/src/TalepYonetim.Api/Program.cs:10,24)
-  — Severity: Info — Recommendation: hata yanıtı içeren ilk spec'te (muhtemelen 0002) Türkçe mesaj
-  kataloğuyla `AddProblemDetails(CustomizeProblemDetails)` — Deferred by: Okan Özkan, 2026-11-23,
-  spec 0001'in hiçbir kriteri hata yanıtı içermiyor
 - **B-4** — AC-10 görünür odak için otomatik test yok; kanıt yalnızca `theme.css` `:focus-visible`
   kuralı ve ekran görüntüsü — Source: spec 0001, VERIFY G-2 (frontend/src/styles/theme.css) —
   Severity: Low — Recommendation: `theme-contrast.test.ts` tarzında `:focus-visible` kuralının

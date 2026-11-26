@@ -36,7 +36,8 @@ Komutlar repo kökünden çalıştırılır. Her biri ayrı bir terminalde açı
    dotnet run --project src/TalepYonetim.Api
    ```
 
-   Backend başlarken veritabanı yapısını kurar ve 6 demo departmanını ekler. Veritabanına
+   Backend başlarken veritabanı yapısını kurar; 6 demo departmanını, 6 rolü ve (yalnızca
+   `Development` ortamında) 7 demo kullanıcıyı ekler. Veritabanına
    ulaşamazsa yine de açılır; sistem durumu "Veritabanı: Erişilemiyor" gösterir.
    Boş veritabanıyla ilk başlatmada konsolda `__ef_migrations_history` tablosu için bir
    `fail: Microsoft.EntityFrameworkCore.Database.Command` satırı görünür. Bu beklenen bir durumdur:
@@ -50,8 +51,36 @@ Komutlar repo kökünden çalıştırılır. Her biri ayrı bir terminalde açı
    npm run dev
    ```
 
-4. Tarayıcıda http://localhost:5173 adresini açın. Genel Bakış ekranındaki **Sistem Durumu**
-   kartında "API: Çalışıyor", "Veritabanı: Erişilebilir" ve "Departman sayısı: 6" görünmelidir.
+4. Tarayıcıda http://localhost:5173 adresini açın. Giriş ekranındaki **Demo kullanıcı seç**
+   listesinden bir kullanıcıya tıklayın (ya da aşağıdaki tablodan e-posta ve parolayı girin).
+   Genel Bakış ekranındaki **Sistem Durumu** kartında "API: Çalışıyor", "Veritabanı: Erişilebilir"
+   ve "Departman sayısı: 6" görünmelidir; menüde yalnızca kullanıcının rolüne açık öğeler bulunur.
+
+### Demo kullanıcılar (yalnızca Development)
+
+Tüm demo kullanıcıların parolası `Demo.2026!`'dir. Bu parola gerçek bir sır değildir ve
+Development dışındaki ortamlarda hiçbir demo kullanıcı oluşturulmaz.
+
+| Kullanıcı | E-posta | Rol |
+|---|---|---|
+| Talep Sahibi | `talep.sahibi@demo.local` | Requester |
+| Birim Yöneticisi | `birim.yoneticisi@demo.local` | DepartmentManager |
+| BT Yazılım Personeli | `bt.yazilim@demo.local` | SoftwareStaff |
+| BT Sistem Personeli | `bt.sistem@demo.local` | SystemStaff |
+| BT Yazılım Birim Yöneticisi | `bt.yazilim.yonetici@demo.local` | ItUnitManager |
+| BT Sistem Birim Yöneticisi | `bt.sistem.yonetici@demo.local` | ItUnitManager |
+| Sistem Yöneticisi | `admin@demo.local` | Admin |
+
+Üst üste 5 hatalı parola hesabı 15 dakika kilitler. Kilidi beklemeden açmak için veritabanını
+sıfırlayın (`docker compose down -v`).
+
+### JWT imzalama anahtarı
+
+Erişim token'larını imzalayan anahtar repoda bulunmaz. Development'ta anahtar verilmezse backend
+her başlangıçta geçici bir anahtar üretir (yeniden başlatmada oturumlar sessizce yenilenir).
+Diğer ortamlarda anahtar en az 32 bayt olmalı ve `Jwt__SigningKey` ortam değişkeniyle (ya da
+`dotnet user-secrets set Jwt:SigningKey <değer> --project src/TalepYonetim.Api`) verilmelidir;
+verilmezse backend başlamaz.
 
 Durdurmak için: frontend ve backend terminallerinde `Ctrl+C`, ardından `docker compose down`
 (verileri de silmek için `docker compose down -v`).

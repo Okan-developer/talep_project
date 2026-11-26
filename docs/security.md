@@ -8,6 +8,8 @@ Her plan ve review'da uyulması zorunlu temel kurallar.
 - Backend sırları (DB bağlantı dizesi, JWT imzalama anahtarı) geliştirmede `dotnet user-secrets` ya
   da ortam değişkeniyle verilir; `appsettings*.json` içinde gerçek sır bulunmaz.
 - Demo kullanıcı parolaları yalnızca seed'de, yalnızca `Development` ortamında kullanılır.
+- JWT imzalama anahtarı Development'ta verilmezse süreç başına rastgele bir anahtar üretilir;
+  Development dışında anahtar (en az 32 bayt) yoksa uygulama başlamaz (spec 0002).
 
 ## Input & output
 - Tüm API girdileri sunucuda doğrulanır (FluentValidation ya da DataAnnotations; frontend'deki Zod
