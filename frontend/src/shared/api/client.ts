@@ -2,6 +2,7 @@ import createClient, { type Middleware } from 'openapi-fetch';
 import {
   accessTokenFor,
   expireSession,
+  getSession,
   refreshSession,
   takeLoggedOutElsewhere,
 } from '@/shared/auth/session';
@@ -41,8 +42,15 @@ export const sessionMiddleware: Middleware = {
       expireSession(); // spec 0002, R-7: another tab logged out — this tab learns it on its next request
       throw new DOMException('Session ended', 'AbortError');
     }
+    const hadSession = getSession() !== null;
     const token = await accessTokenFor();
-    if (token) request.headers.set('Authorization', `Bearer ${token}`);
+    if (!token) {
+      // the refresh before sending was refused: the session has just ended — do not send the request
+      // only to get a 401 and refresh a second time
+      if (hadSession) throw new DOMException('Session ended', 'AbortError');
+      return request; // no session, no bearer token: nothing to refresh on a 401 either
+    }
+    request.headers.set('Authorization', `Bearer ${token}`);
     retryCopies.set(id, request.clone());
     return request;
   },
