@@ -31,3 +31,12 @@ step 7). Nothing lands here without that decision; noise is rejected in the tria
   Source: spec 0001, VERIFY G-6 (frontend/src/app/pages/NotFoundPage.tsx) — Severity: Info —
   Recommendation: EmptyState başlığı bu sayfada başlık rolü taşımasın ya da farklı metin kullansın
   — Deferred by: Okan Özkan, 2026-11-23, üretim kodu değişikliği; sayfalar işlendiğinde ele alınır
+- **B-7** — `refresh_token` tablosu temizlenmiyor; her yenileme yeni satır ekliyor — Source: spec 0002,
+  review round 1 L-5 (backend/src/Modules/TalepYonetim.Identity/Infrastructure/RefreshTokenStore.cs) —
+  Severity: Low — Recommendation: süresi 7 günden fazla geçmiş satırları silen periyodik temizlik —
+  Deferred by: Okan Özkan, 2026-11-27, hiçbir kriteri etkilemiyor; üretime geçiş spec'inde ele alınır
+- **B-8** — Login girdisi endpoint'te elle doğrulanıyor; docs/security.md FluentValidation ya da
+  DataAnnotations diyor — Source: spec 0002, review round 1 I-3
+  (backend/src/Modules/TalepYonetim.Identity/Endpoints/AuthEndpoints.cs) — Severity: Info —
+  Recommendation: girdi alan bir sonraki uçla birlikte doğrulama mekanizmasına taşımak — Deferred by:
+  Okan Özkan, 2026-11-27, doğrulama sunucuda var ve AC-3 karşılanıyor
