@@ -1,6 +1,7 @@
-import { screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { REQUEST_TIMEOUT_MS } from '@/shared/api/client';
 import { getSession } from '@/shared/auth/session';
 import { renderApp } from '@/test/renderApp';
 import { logoutUrl, server, userWith } from '@/test/server';
@@ -45,5 +46,33 @@ describe('top bar (spec 0002, R-7)', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Giriş yap' })).toBeInTheDocument();
     expect(getSession()).toBeNull();
+  });
+
+  it('AC-9: logout returns to the login screen after 10 seconds when the server never answers', async () => {
+    // Only the timer functions are faked: promises, MSW and React keep running on real microtasks.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      let requested!: () => void;
+      const inFlight = new Promise<void>((resolve) => (requested = resolve));
+      server.use(
+        http.post(logoutUrl, () => {
+          requested();
+          return new Promise<never>(() => {});
+        }),
+      );
+      const { router } = renderApp('/raporlar');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Çıkış' }));
+      await act(() => inFlight);
+      await act(() => vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS - 1));
+      expect(router.state.location.pathname).toBe('/raporlar');
+
+      await act(() => vi.advanceTimersByTimeAsync(1));
+      expect(router.state.location.pathname).toBe('/giris');
+      expect(screen.getByRole('heading', { level: 1, name: 'Giriş yap' })).toBeInTheDocument();
+      expect(getSession()).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

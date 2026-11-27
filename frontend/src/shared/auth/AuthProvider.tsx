@@ -75,11 +75,17 @@ async function login(email: string, password: string): Promise<LoginOutcome> {
 }
 
 async function logout() {
+  // bounded like every other call (spec 0001, AC-4): a server that never answers must not keep the
+  // user on the page after "Çıkış" (R-7)
+  const timeout = withTimeout(undefined);
   try {
-    await authClient.POST('/api/auth/logout', { credentials: 'same-origin' });
+    await timeout.race(
+      authClient.POST('/api/auth/logout', { signal: timeout.signal, credentials: 'same-origin' }),
+    );
   } catch {
     // The server session ends with the cookie's lifetime at worst; this device forgets it now.
   } finally {
+    timeout.dispose();
     clearSession();
   }
 }
