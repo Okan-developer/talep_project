@@ -69,14 +69,81 @@ describe('session (spec 0002, R-6 / AC-7)', () => {
     expect(a).toBe(b);
   });
 
-  it('serialises refreshes across tabs with a Web Lock', async () => {
-    const request = vi.fn((_name: string, work: () => Promise<unknown>) => work());
-    vi.stubGlobal('navigator', { ...navigator, locks: { request } });
-    server.use(http.post(refreshUrl, () => HttpResponse.json(sessionFor(adminUser))));
+  describe('two tabs refreshing at the same moment (AC-7)', () => {
+    /** A Web Locks stand-in: `serial` runs the holders one after another, as browsers do. */
+    function locks(serial: boolean) {
+      let tail: Promise<unknown> = Promise.resolve();
+      return {
+        request: (_name: string, work: () => Promise<unknown>) => {
+          if (!serial) return work();
+          const run = tail.then(work);
+          tail = run.catch(() => {});
+          return run;
+        },
+      };
+    }
 
-    await refreshSession();
+    /**
+     * The server side of rotation: the cookie a request carries is the one in the browser's jar when
+     * it is sent; presenting an already rotated cookie is reuse and is refused (R-6).
+     */
+    function rotatingServer() {
+      let jar = 'cookie-0';
+      let valid = jar;
+      let counter = 0;
+      server.use(
+        http.post(refreshUrl, async () => {
+          const sent = jar;
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          if (sent !== valid) return new HttpResponse(null, { status: 401 });
+          counter += 1;
+          valid = jar = `cookie-${counter}`;
+          return HttpResponse.json(sessionFor(adminUser));
+        }),
+      );
+    }
 
-    expect(request).toHaveBeenCalledWith(REFRESH_LOCK, expect.any(Function));
+    /** Each tab has its own copy of the session module, as each browser tab has its own memory. */
+    async function openTab() {
+      vi.resetModules();
+      return import('./session');
+    }
+
+    afterEach(() => {
+      vi.resetModules();
+    });
+
+    it('with the cross-tab lock both tabs keep their session', async () => {
+      vi.stubGlobal('navigator', { ...navigator, locks: locks(true) });
+      rotatingServer();
+      const [tabA, tabB] = [await openTab(), await openTab()];
+
+      const [a, b] = await Promise.all([tabA.refreshSession(), tabB.refreshSession()]);
+
+      expect(a).not.toBeNull();
+      expect(b).not.toBeNull();
+    });
+
+    it('without serialising, the second tab presents the rotated cookie and loses its session', async () => {
+      // the control: shows the scenario above really depends on the lock
+      vi.stubGlobal('navigator', { ...navigator, locks: locks(false) });
+      rotatingServer();
+      const [tabA, tabB] = [await openTab(), await openTab()];
+
+      const results = await Promise.all([tabA.refreshSession(), tabB.refreshSession()]);
+
+      expect(results.filter((session) => session === null)).toHaveLength(1);
+    });
+
+    it('the lock is the named Web Lock shared by every tab', async () => {
+      const request = vi.fn((_name: string, work: () => Promise<unknown>) => work());
+      vi.stubGlobal('navigator', { ...navigator, locks: { request } });
+      server.use(http.post(refreshUrl, () => HttpResponse.json(sessionFor(adminUser))));
+
+      await refreshSession();
+
+      expect(request).toHaveBeenCalledWith(REFRESH_LOCK, expect.any(Function));
+    });
   });
 
   it('a refused refresh resolves null and ends the session with the expired notice', async () => {
