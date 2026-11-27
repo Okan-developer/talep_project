@@ -39,9 +39,23 @@ public sealed class RefreshTokenTests
         successor.FamilyId.ShouldBe(token.FamilyId);
         successor.UserId.ShouldBe(UserId);
         successor.Classify(later).ShouldBe(RefreshTokenUse.Valid);
-        successor.ExpiresAt.ShouldBe(later.AddDays(7));
+        successor.ExpiresAt.ShouldBe(token.ExpiresAt);
         token.ReplacedById.ShouldBe(successor.Id);
         token.Classify(later).ShouldBe(RefreshTokenUse.Reused);
+    }
+
+    [Fact]
+    public void Rotation_NeverExtendsTheFamilyPastSevenDaysFromSignIn()
+    {
+        var token = RefreshToken.StartFamily(UserId, "h1", Start);
+        var day6 = Start.AddDays(6);
+
+        var successor = token.Rotate("h2", day6);
+
+        successor.ExpiresAt.ShouldBe(Start.AddDays(7));
+        successor.Classify(Start.AddDays(7).AddSeconds(-1)).ShouldBe(RefreshTokenUse.Valid);
+        successor.Classify(Start.AddDays(7)).ShouldBe(RefreshTokenUse.Expired);
+        successor.Classify(day6.AddDays(6)).ShouldBe(RefreshTokenUse.Expired);
     }
 
     [Fact]

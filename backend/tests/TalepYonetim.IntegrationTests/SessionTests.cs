@@ -94,6 +94,29 @@ public sealed class SessionTests(PostgresFixture postgres) : IClassFixture<Postg
     }
 
     [Fact]
+    public async Task Refresh_SevenDaysAfterSignIn_IsRejectedEvenIfRefreshedInBetween()
+    {
+        var signedInAt = DateTimeOffset.UtcNow;
+        var time = new FakeTimeProvider(signedInAt);
+        await using var host = await StartAsync(time);
+        using var client = host.CreateHttpsClient();
+        var (_, first) = await AuthClient.SignInAsync(client, Email);
+
+        time.Advance(TimeSpan.FromDays(6));
+        using var day6 = await AuthClient.PostWithCookieAsync(client, RefreshPath, first);
+        day6.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var expires = DateTimeOffset.Parse(
+            AuthClient.SetCookieHeader(day6)!.Split(';').Single(p => p.Trim().StartsWith("expires=", StringComparison.OrdinalIgnoreCase)).Split('=', 2)[1],
+            System.Globalization.CultureInfo.InvariantCulture);
+        expires.ShouldBe(signedInAt.AddDays(7), TimeSpan.FromSeconds(1)); // the cookie does not slide either
+
+        time.Advance(TimeSpan.FromDays(1));
+        using var day7 = await AuthClient.PostWithCookieAsync(client, RefreshPath, AuthClient.RefreshCookieOf(day6));
+
+        await AssertSessionExpiredAsync(day7);
+    }
+
+    [Fact]
     public async Task Refresh_WithoutOrWithAnUnknownCookie_IsRejected()
     {
         await using var host = await StartAsync();
