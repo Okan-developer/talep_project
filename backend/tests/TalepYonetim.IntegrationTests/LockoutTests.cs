@@ -37,6 +37,26 @@ public sealed class LockoutTests(PostgresFixture postgres) : IClassFixture<Postg
     }
 
     [Fact]
+    public async Task TheFifthFailure_ItselfAlreadyAnswersWithTheLockMessage()
+    {
+        // Identity reports the lockout on the attempt that reaches the threshold: the user sees the
+        // lock message on the 5th wrong password, not only on the 6th attempt (review round 1, I-1).
+        await using var host = new AuthTestHost(await postgres.CreateDatabaseAsync());
+        await host.SeedUserAsync(Email, "Requester");
+        using var client = host.CreateHttpsClient();
+        for (var i = 0; i < 4; i++)
+        {
+            using var failure = await AuthClient.LoginAsync(client, Email, Wrong);
+            (await CodeAndDetail(failure)).Code.ShouldBe("invalid_credentials");
+        }
+
+        using var fifth = await AuthClient.LoginAsync(client, Email, Wrong);
+
+        fifth.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        (await CodeAndDetail(fifth)).ShouldBe(("account_locked", "Hesap geçici olarak kilitlendi. 15 dakika sonra tekrar deneyin."));
+    }
+
+    [Fact]
     public async Task FourFailures_DoNotLock()
     {
         await using var host = new AuthTestHost(await postgres.CreateDatabaseAsync());
