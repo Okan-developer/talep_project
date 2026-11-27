@@ -19,6 +19,12 @@ public sealed record LoginInput(string? Email, string? Password);
 /// <summary>Turkish business errors of authentication (docs/conventions.md, Error handling).</summary>
 public static class AuthErrors
 {
+    /// <summary>The ProblemDetails title of a refused login.</summary>
+    public const string LoginFailedTitle = "Giriş başarısız";
+
+    /// <summary>The ProblemDetails title of a refused session refresh.</summary>
+    public const string SessionEndedTitle = "Oturum sona erdi";
+
     public static readonly Error InvalidCredentials = new("invalid_credentials", "E-posta ya da parola hatalı.");
 
     public static readonly Error SessionExpired = new("session_expired", "Oturumunuz sona erdi. Lütfen tekrar giriş yapın.");

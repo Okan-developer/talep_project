@@ -40,6 +40,20 @@ public static class Result
     public static Result<T> Failure<T>(Error error) => Result<T>.CreateFailure(error);
 }
 
+/// <summary>
+/// Turkish validation texts every module's endpoints share (docs/conventions.md, Language: one message
+/// catalogue). The Api's ErrorCatalog uses the same texts for a framework 400.
+/// </summary>
+public static class ValidationMessages
+{
+    public const string Title = "Geçersiz istek";
+
+    public const string Detail = "İstekteki bilgiler doğrulanamadı.";
+
+    /// <summary>A required field is missing.</summary>
+    public const string RequiredField = "Bu alan zorunludur.";
+}
+
 /// <summary>ProblemDetails extension names shared by every module's endpoints.</summary>
 public static class ProblemExtensions
 {

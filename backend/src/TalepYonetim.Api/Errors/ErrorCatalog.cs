@@ -1,3 +1,5 @@
+using TalepYonetim.SharedKernel;
+
 namespace TalepYonetim.Api.Errors;
 
 /// <summary>A Turkish title and detail for one HTTP error status.</summary>
@@ -11,7 +13,7 @@ public static class ErrorCatalog
 {
     private static readonly Dictionary<int, ErrorText> ByStatus = new()
     {
-        [400] = new("Geçersiz istek", "İstekteki bilgiler doğrulanamadı."),
+        [400] = new(ValidationMessages.Title, ValidationMessages.Detail),
         [401] = new("Kimlik doğrulama gerekli", "Bu işlem için giriş yapmanız gerekiyor."),
         [403] = new("Yetki yok", "Bu işlem için yetkiniz yok."),
         [404] = new("Bulunamadı", "İstenen kaynak bulunamadı."),
@@ -27,7 +29,4 @@ public static class ErrorCatalog
         ByStatus.TryGetValue(status, out var text) ? text
         : status >= 500 ? ByStatus[500]
         : OtherClientError;
-
-    /// <summary>The text of a field validation message: a required field is missing.</summary>
-    public const string RequiredField = "Bu alan zorunludur.";
 }

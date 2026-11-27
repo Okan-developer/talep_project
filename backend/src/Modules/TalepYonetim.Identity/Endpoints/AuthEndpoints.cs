@@ -17,7 +17,6 @@ public static class AuthEndpoints
     public const string LoginRateLimitPolicy = "login";
     public const string RefreshCookie = "talep_refresh";
     private const string CookiePath = "/api/auth";
-    private const string RequiredField = "Bu alan zorunludur.";
 
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder app, bool isDevelopment)
     {
@@ -55,27 +54,27 @@ public static class AuthEndpoints
         var errors = new Dictionary<string, string[]>(StringComparer.Ordinal);
         if (string.IsNullOrWhiteSpace(input.Email))
         {
-            errors["email"] = [RequiredField];
+            errors["email"] = [ValidationMessages.RequiredField];
         }
 
         if (string.IsNullOrEmpty(input.Password))
         {
-            errors["password"] = [RequiredField];
+            errors["password"] = [ValidationMessages.RequiredField];
         }
 
         if (errors.Count > 0)
         {
             return TypedResults.ValidationProblem(
                 errors,
-                title: "Geçersiz istek",
-                detail: "İstekteki bilgiler doğrulanamadı.",
+                title: ValidationMessages.Title,
+                detail: ValidationMessages.Detail,
                 extensions: new Dictionary<string, object?> { [ProblemExtensions.Code] = "validation_failed" });
         }
 
         var result = await handler.HandleAsync(input, cancellationToken);
         if (!result.IsSuccess)
         {
-            return Problem(StatusCodes.Status401Unauthorized, "Giriş başarısız", result.Error!);
+            return Problem(StatusCodes.Status401Unauthorized, AuthErrors.LoginFailedTitle, result.Error!);
         }
 
         WriteRefreshCookie(http, result.Value);
@@ -89,7 +88,7 @@ public static class AuthEndpoints
         if (!result.IsSuccess)
         {
             ClearRefreshCookie(http);
-            return Problem(StatusCodes.Status401Unauthorized, "Oturum sona erdi", result.Error!);
+            return Problem(StatusCodes.Status401Unauthorized, AuthErrors.SessionEndedTitle, result.Error!);
         }
 
         WriteRefreshCookie(http, result.Value);
